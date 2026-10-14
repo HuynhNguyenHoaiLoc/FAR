@@ -1,0 +1,28 @@
+{
+  "dataset": "FAR-POLYP-SEG",
+  "checked_at": "2026-10-14T18:04:26.136404+07:00",
+  "manifest": "data/dataset_manifest.csv",
+  "status": "PASS",
+  "counts": {
+    "patients": 455,
+    "total_images": 8181,
+    "polyp_images": 432,
+    "healthy_images": 7749,
+    "duplicate_image_ids": 0,
+    "patients_with_polyp": 187,
+    "never_polyp_patients": 268,
+    "checked_images": 8181,
+    "checked_masks": 432
+  },
+  "mask_validation": {
+    "source_format": "JPEG",
+    "grayscale_threshold": 128,
+    "binary_values_after_normalization": [
+      0,
+      255
+    ],
+    "source_files_modified": false
+  },
+  "error_count": 0,
+  "errors": []
+}
