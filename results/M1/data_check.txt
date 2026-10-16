@@ -1,0 +1,30 @@
+﻿FAR-POLYP-SEG - MODULE 1 DATA CHECK REPORT
+==========================================
+
+Dataset: FAR-POLYP-SEG
+Checked at: 2026-10-14T18:04:26.136404+07:00
+Status: PASS
+
+DATASET STATISTICS
+------------------
+Total patients: 455
+Total images: 8181
+Polyp images: 432
+Healthy images: 7749
+Patients with polyp: 187
+Never-polyp patients: 268
+
+VALIDATION
+----------
+Checked images: 8181
+Checked masks: 432
+Duplicate image IDs: 0
+Mask source format: JPEG
+Mask grayscale threshold: 128
+Source files modified: False
+
+ERRORS
+------
+Error count: 0
+
+RESULT: PASS
