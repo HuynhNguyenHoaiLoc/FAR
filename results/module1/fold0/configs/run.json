@@ -1,0 +1,115 @@
+{
+ "schema_version": 1,
+ "experiment": "E1",
+ "model": "pranet",
+ "scheme": "grouped_cv5",
+ "seed": 2026,
+ "fold": 0,
+ "status": "complete",
+ "split": {
+  "scheme": "grouped_cv5",
+  "seed": 2026,
+  "fold": 0,
+  "index_sha256": "20f2029b7c9911eb519a1a61d774832681d04ce0151d2592d8a3e0b7e67b15a6",
+  "n_train": 301,
+  "n_val": 44,
+  "n_test": 87,
+  "n_train_patients": 130,
+  "n_val_patients": 19,
+  "n_test_patients": 38,
+  "test_frames_per_patient_hist": {
+   "1": 23,
+   "2": 6,
+   "3": 3,
+   "4": 2,
+   "5": 1,
+   "6": 1,
+   "7": 1,
+   "17": 1
+  },
+  "balance": {
+   "train": {
+    "n_patients": 130,
+    "bbps_mean": 7.438,
+    "age_mean": 53.32,
+    "pct_female": 0.5462
+   },
+   "val": {
+    "n_patients": 19,
+    "bbps_mean": 7.579,
+    "age_mean": 57.95,
+    "pct_female": 0.5789
+   },
+   "test": {
+    "n_patients": 38,
+    "bbps_mean": 7.316,
+    "age_mean": 52.61,
+    "pct_female": 0.5
+   }
+  }
+ },
+ "canonical": {
+  "gt_threshold": 127,
+  "pred_threshold": 0.5,
+  "eval_resolution": "native",
+  "zero_division": 0.0,
+  "min_area_px": 100,
+  "train_size": 256,
+  "imagenet_norm": true,
+  "epochs": 150,
+  "nnunet_epochs": 500,
+  "batch_size": 8,
+  "optimizer": "adam",
+  "learning_rate": 0.0001,
+  "lr_schedule": "cosine",
+  "lr_min": 1e-06,
+  "early_stop_patience": 30,
+  "checkpoint_policy": "best_val_dice",
+  "augmentation": {
+   "hflip": 0.5,
+   "vflip": 0.5,
+   "rotate_limit": 15,
+   "rotate_p": 0.3
+  },
+  "deterministic": true,
+  "cudnn_deterministic": true,
+  "cudnn_benchmark": false,
+  "torch_deterministic_warn_only": true
+ },
+ "canonical_config_sha256": "bd8463f1f03b27532da2424a341a91d3144c64eb5e9064a453aa11fc90b5c3bb",
+ "environment": {
+  "python": "3.13.15",
+  "platform": "Linux-6.18.48+-x86_64-with-glibc2.39",
+  "host": "e6fe6ee54fac",
+  "git_commit": "ad3bf1c51529bda6de50badedba124e1e15a653c",
+  "git_dirty": false,
+  "versions": {
+   "numpy": "2.1.3",
+   "torch": "2.11.0+cu128",
+   "torchvision": "0.26.0+cu128",
+   "cv2": "4.14.0",
+   "PIL": "12.3.0",
+   "sklearn": "1.6.1",
+   "scipy": "1.16.3",
+   "albumentations": "2.0.8",
+   "segmentation_models_pytorch": "0.3.3",
+   "SimpleITK": "2.5.6",
+   "pandas": "2.3.3"
+  },
+  "gpu": "Tesla T4",
+  "cuda": "12.8",
+  "cudnn": "91900",
+  "gpu_memory_gb": 15.6
+ },
+ "started_utc": "2026-10-15T17:03:17Z",
+ "finished_utc": "2026-10-15T17:09:25Z",
+ "wall_seconds": 373.6,
+ "n_scored": 87,
+ "epochs_run": 45,
+ "best_epoch": 14,
+ "best_val_dice": 0.7498315587234827,
+ "train_seconds": 366.6,
+ "checkpoint_policy": "best_val_dice",
+ "train_seed": 1384356575,
+ "device": "cuda"
+}

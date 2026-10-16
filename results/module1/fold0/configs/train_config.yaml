@@ -1,0 +1,60 @@
+# The canonical protocol. Every run stamps a SHA-256 of this block into its
+# manifest, and the aggregator refuses to average runs whose hashes disagree.
+#
+# Each entry below replaces a decision that the legacy code made differently in
+# different files. The comment records what it was and why it changed.
+
+# -- ground truth ---------------------------------------------------------
+# Released masks are lossy JPEG with 13-17 grey levels; "> 0" swallows the
+# compression halo, inflating foreground area.
+gt_threshold: 127
+
+# -- predictions ----------------------------------------------------------
+pred_threshold: 0.5
+
+# Probability maps are resampled to native size and only then thresholded --
+# interpolating a binary mask and re-thresholding discards sub-pixel boundary
+# information.
+eval_resolution: native
+
+# 1 would score an empty prediction over a non-empty target as perfect precision.
+zero_division: 0.0
+
+# Alarm gate for the false-positive analysis: ~0.03% of a 672x480 frame, well
+# under the smallest annotated polyp (0.23%), so it cannot mask a real detection.
+min_area_px: 100
+
+# -- training -------------------------------------------------------------
+# Unified epoch budget and batch size for fairness.
+train_size: 256           # 256 beats 512 at both imagenet_norm settings and is
+                          # ~3.5x faster
+imagenet_norm: true      # must match encoder weights
+epochs: 150
+nnunet_epochs: 500        # reduced from nnU-Net's 1000 default. Measured
+                          # ~72s/epoch on RTX 5060, ~9s/epoch on B200.
+batch_size: 8
+optimizer: adam
+learning_rate: 0.0001
+lr_schedule: cosine
+lr_min: 0.000001
+early_stop_patience: 30
+
+# Always best validation Dice, not train loss or last epoch. Dice is comparable
+# across models in a way that model-specific losses are not.
+checkpoint_policy: best_val_dice
+
+augmentation:
+  hflip: 0.5
+  vflip: 0.5
+  rotate_limit: 15
+  rotate_p: 0.3
+
+# -- determinism ----------------------------------------------------------
+# Strict seeding applied everywhere.
+# `warn_only` because some CUDA kernels have no deterministic implementation --
+# the claim is "identical on the same hardware and library versions", not
+# bitwise-identical everywhere.
+deterministic: true
+cudnn_deterministic: true
+cudnn_benchmark: false
+torch_deterministic_warn_only: true

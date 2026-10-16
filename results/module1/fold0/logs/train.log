@@ -1,0 +1,5 @@
+=== OFFICIAL PRANET TRAINING ===
+run E1/pranet/grouped_cv5/fold0
+    early stop at epoch 44 (best 0.7498 @ 14)
+  dice=0.7586  iou=0.6535  precision=0.7819  recall=0.8025  accuracy=0.9651  specificity=0.9873
+  -> /kaggle/working/farseg_official_results/E1/pranet/grouped_cv5/fold0
