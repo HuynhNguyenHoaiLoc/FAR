@@ -1,0 +1,60 @@
+{
+  "module": "Module 1 - PraNet Backbone",
+  "experiment": "E1",
+  "model": "PraNet",
+  "scheme": "grouped_cv5",
+  "fold": 0,
+  "dataset": {
+    "train_images": 301,
+    "validation_images": 44,
+    "test_images": 87,
+    "test_split": "OUTER_TEST"
+  },
+  "checkpoint": "checkpoints/best_model.pth",
+  "prediction_protocol": {
+    "input_size": [
+      256,
+      256
+    ],
+    "normalization": "ImageNet",
+    "activation": "sigmoid",
+    "output": "main_logits",
+    "resize_to_native": "bilinear",
+    "align_corners": false,
+    "threshold": 0.5,
+    "positive_rule": "probability > 0.5",
+    "probability_dtype": "float32",
+    "binary_png_values": [
+      0,
+      255
+    ]
+  },
+  "evaluation": {
+    "resolution": "native",
+    "source": "official FAR-POLYP-SEG E1 fold0",
+    "macro": {
+      "dice": 0.7585645556003896,
+      "iou": 0.6535017224507189,
+      "precision": 0.7819139779825978,
+      "recall": 0.8025417054856054,
+      "accuracy": 0.9651101106148182,
+      "specificity": 0.9872926296123927
+    },
+    "micro": {
+      "dice": 0.7382307192395992,
+      "iou": 0.5850758379493175,
+      "precision": 0.808597093175593,
+      "recall": 0.6791308581136799,
+      "accuracy": 0.9645500689602722,
+      "specificity": 0.9872274142072603
+    },
+    "n_rows": 87,
+    "n_empty_pred": 0
+  },
+  "export_validation": {
+    "probability_files": 87,
+    "binary_mask_files": 87,
+    "predictions_csv_rows": 87,
+    "official_pred_pos_matches": 87
+  }
+}
