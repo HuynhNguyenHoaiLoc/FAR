@@ -9,6 +9,7 @@ from preprocess import load_sample
 
 ALLOWED_SPLITS = {
     "SEG_TRAIN",
+    "SEG_VAL",
     "META_FIT",
     "CALIBRATION",
     "OUTER_TEST",
@@ -22,7 +23,8 @@ class FARPolypDataset(Dataset):
         manifest_path,
         patient_ids,
         split,
-        augment=False
+        augment=False,
+        image_ids=None
     ):
         if split not in ALLOWED_SPLITS:
             raise ValueError(f"Invalid split: {split}")
@@ -42,6 +44,25 @@ class FARPolypDataset(Dataset):
         self.df = df[
             df["patient_id"].astype(str).isin(patient_ids)
         ].reset_index(drop=True)
+
+        # Nếu có danh sách ảnh chính thức, chỉ đọc đúng các ảnh đó
+        if image_ids is not None:
+            image_ids = {str(x) for x in image_ids}
+
+            if not image_ids:
+                raise ValueError("image_ids cannot be empty")
+
+            available_ids = set(self.df["image_id"].astype(str))
+            missing_ids = image_ids - available_ids
+
+            if missing_ids:
+                raise ValueError(
+                    f"Unknown image IDs: {sorted(missing_ids)[:5]}"
+                )
+
+            self.df = self.df[
+                self.df["image_id"].astype(str).isin(image_ids)
+            ].reset_index(drop=True)
 
         if self.df.empty:
             raise ValueError("No images found for patient_ids")
