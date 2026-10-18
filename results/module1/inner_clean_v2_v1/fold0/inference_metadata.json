@@ -1,0 +1,24 @@
+{
+  "model": "PraNet",
+  "fold": 0,
+  "protocol": "inner_clean_v2_v1",
+  "checkpoint_sha256": "8c75a4fb5675d0dc7985704dcbf2a44e2545f603645dec31ff38c61e9f91561a",
+  "split_csv_sha256": "8d7606ae2bff6f823b32f01be05c72356a188e6e8c12b0602d4c5bac3e68804d",
+  "prediction_threshold": 0.5,
+  "probability_dtype": "float32",
+  "probability_resolution": "native",
+  "output_splits": [
+    "SEG_TRAIN",
+    "SEG_VAL",
+    "META_FIT",
+    "CALIBRATION"
+  ],
+  "excluded_splits": [
+    "OUTER_TEST",
+    "NEVER_POLYP_TEST"
+  ],
+  "checkpoint_selection": "SEG_VAL",
+  "status": "INFERENCE_COMPLETE",
+  "images_exported": 2717,
+  "elapsed_seconds_this_run": 81.75
+}

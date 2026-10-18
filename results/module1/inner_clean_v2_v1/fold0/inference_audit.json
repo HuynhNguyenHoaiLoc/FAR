@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "fold": 0,
+  "protocol": "inner_clean_v2_v1",
+  "images": 2717,
+  "probability_files": 2717,
+  "binary_mask_files": 2717,
+  "missing_files": 0,
+  "sampled_files_verified": 40,
+  "checkpoint_sha256": "8c75a4fb5675d0dc7985704dcbf2a44e2545f603645dec31ff38c61e9f91561a",
+  "tested_splits": [
+    "CALIBRATION",
+    "META_FIT",
+    "SEG_TRAIN",
+    "SEG_VAL"
+  ],
+  "outer_test_used": false,
+  "never_polyp_test_used": false,
+  "notes": "All output paths and mappings verified. Array values and PNG consistency sampled."
+}
