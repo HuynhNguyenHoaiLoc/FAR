@@ -1,3 +1,17 @@
+"""LEGACY ONLY — historical uncleaned 432-image / patient splitting artifact.
+
+Do not use as a source for Clean V2 or Inner CV5.  To reproduce a prior
+experiment deliberately, pass --legacy-reproduce.  This program may write
+historical output files; it does not modify approved Clean V2 CSVs.
+"""
+import sys
+if "--legacy-reproduce" not in sys.argv:
+    raise SystemExit(
+        "LEGACY ONLY: this script creates historical data artifacts. "
+        "Use --legacy-reproduce only for an intentional legacy reproduction. "
+        "New experiments must use data/splits/inner_clean_v2_v1/."
+    )
+
 
 import json
 from pathlib import Path

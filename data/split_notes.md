@@ -1,119 +1,49 @@
+# FAR patient split usage — current vs historical
 
-# FAR-POLYP-SEG – Patient Split Notes
+## CURRENT — use this for new experiments
 
-## 1. Mục đích
+The team-approved data policy is **Clean V2 Outer CV5 + Inner CV5**:
 
-Chia dữ liệu theo bệnh nhân (patient-level split) để tránh
-data leakage giữa Train, Validation và Test.
+- Patient-level outer split: `data/splits/clean_v2/patient_splits_clean_cv5_v2.csv`
+- Image-level outer split: `data/splits/clean_v2/image_splits_clean_cv5_v2.csv`
+- Patient-level inner split: `data/splits/inner_clean_v2_v1/patient_inner_splits_cv5_candidate.csv`
+- **Image-level inner split** (training/inference authority): `data/splits/inner_clean_v2_v1/image_inner_splits_cv5_candidate.csv`
 
-Sử dụng cách chia 5-fold chính thức của tác giả
-FAR-POLYP-SEG, không tự chia ngẫu nhiên.
+Despite the filename `_candidate`, the group lead accepted this Inner CV5
+assignment. Some generated audit files still carry a historical pending string;
+do not regenerate split assignments or silently edit provenance.
 
-Nguồn:
-https://github.com/FAR-POLYP-SEG/Codes
+Select by both `fold` (0–4) and `inner_split`:
 
-Official protocol:
-- Scheme: grouped_cv5
-- Seed: 2026
-- Number of folds: 5
+| Module | Purpose | Inner split |
+|---|---|---|
+| M1 | PraNet training | SEG_TRAIN (Polyp) |
+| M1 | checkpoint selection | SEG_VAL (Polyp) |
+| M2 | mining, fine-tuning | SEG_TRAIN only |
+| M2 | checkpoint selection | SEG_VAL |
+| M3 | memory building | META_FIT; exclude same patient/group at query time |
+| M4 | fit reranker | META_FIT, using unseen M1/M2 predictions |
+| M4 | choose threshold | CALIBRATION |
+| All | locked final evaluation only | OUTER_TEST / NEVER_POLYP_TEST |
 
-## 2. Thống kê dữ liệu
+Do not infer patients from individual images or reshuffle them.  DataLoaders
+may shuffle *within* SEG_TRAIN, but this must never change assignments.
 
-Tổng cộng 455 bệnh nhân:
+Use `from far_splits import select_images` or M1 `FARPolypDataset`.
+See `docs/CLEAN_V2_SPLIT_MIGRATION.md` and `docs/A02_CLEAN_V2_HANDOFF.md`.
 
-- POLYP_COHORT: 187 bệnh nhân
-- NEVER_POLYP_COHORT: 268 bệnh nhân
+## LEGACY — reproducibility only
 
-Có 432 ảnh Polyp được sử dụng trong official CV5.
+- `data/splits.csv`
+- `data/patient_splits_official_cv5.csv`
+- `data/official_polyp_image_splits_cv5.csv`
+- `code/module1/import_official_splits.py`
+- `code/module1/build_official_image_splits.py`
+- `code/module1/create_patient_cohorts.py`
+- `code/module1/legacy_dataset.py`
+- `results/module1/fold0/`
 
-## 3. Phân chia fold0
-
-| Split | Patients | Polyp Images |
-|---|---:|---:|
-| TRAIN | 130 | 301 |
-| VAL | 19 | 44 |
-| TEST | 38 | 87 |
-| NEVER_POLYP_TEST | 268 | Không thuộc bộ 432 ảnh Polyp |
-
-Train, Val và Test không có bệnh nhân trùng nhau.
-
-NEVER_POLYP_TEST được giữ riêng để phục vụ
-đánh giá false positive / stress-test.
-
-Không đưa NEVER_POLYP_TEST vào huấn luyện,
-tuning hoặc calibration.
-
-## 4. Các file dữ liệu
-
-### data/splits.csv
-
-File bàn giao theo kế hoạch A02.
-
-Chứa patient-level split của fold0:
-- patient_id
-- fold
-- cohort
-- split
-
-### data/patient_splits_official_cv5.csv
-
-Lưu patient-level splits đầy đủ của cả 5 folds.
-
-### data/official_polyp_image_splits_cv5.csv
-
-Lưu danh sách image_id chính thức của Train,
-Val và Test trong cả 5 folds.
-
-Phải sử dụng file này khi reproduce segmentation
-baseline để chọn đúng ảnh theo JSON của tác giả.
-
-### data/dataset_manifest.csv
-
-Danh sách ảnh, Patient ID, nhãn Polyp và
-đường dẫn ảnh/mask.
-
-## 5. Quy tắc sử dụng
-
-1. Chia dữ liệu theo patient_id, không chia ngẫu nhiên
-   theo từng ảnh.
-
-2. Khi chạy fold0, sử dụng data/splits.csv.
-
-3. Khi chạy cross-validation đầy đủ, sử dụng
-   data/patient_splits_official_cv5.csv.
-
-4. Đối với PraNet baseline, lọc chính xác image_id
-   theo data/official_polyp_image_splits_cv5.csv.
-
-5. Augmentation chỉ áp dụng cho TRAIN.
-
-6. Không dùng TEST để lựa chọn hyperparameters
-   hoặc checkpoint.
-
-7. Không tự xem VAL là CALIBRATION hay META_FIT.
-   Các tập này cần protocol riêng nếu pipeline mở rộng
-   sử dụng chúng.
-
-8. NEVER_POLYP_TEST chỉ dùng cho đánh giá cuối cùng.
-
-## 6. Kết quả kiểm tra
-
-- Official 5-fold patient split: PASS
-- Official image split consistency: PASS
-- Patient leakage fold0: NONE
-- Fold0 Dataset class: PASS
-- Fold0 DataLoader: PASS
-- All 432 polyp images and masks: PASS
-- Horizontal flip synchronization: PASS
-
-## 7. Ghi chú tái lập
-
-Hai script:
-- code/module1/import_official_splits.py
-- code/module1/build_official_image_splits.py
-
-đọc file JSON chính thức từ bản clone
-FAR-POLYP-SEG-Official nằm cạnh thư mục FAR.
-
-File splits.csv là bản bàn giao fold0.
-Nó không thay thế bộ official CV5 đầy đủ.
+Those files describe an older 432-Polyp / 301-train Fold 0 protocol.
+They are retained intentionally, but are **not valid defaults** for Clean V2.
+Legacy split generator scripts require `--legacy-reproduce`; the old dataset
+requires the environment variable `FAR_ALLOW_LEGACY_SPLITS=1`.

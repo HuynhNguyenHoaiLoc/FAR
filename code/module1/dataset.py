@@ -1,103 +1,51 @@
+"""Default FAR Module 1 dataset: approved Clean V2 / Inner CV5.
 
-import numpy as np
-import pandas as pd
-import torch
+The historical manifest/patient-list implementation is now in
+``code/module1/legacy_dataset.py`` and requires an explicit legacy opt-in.
+New training must not manually assign patients or silently use an old CSV.
+"""
+from __future__ import annotations
 
-from torch.utils.data import Dataset
-from preprocess import load_sample
+from pathlib import Path
+
+try:
+    from .clean_v2_dataset import CleanV2SegDataset, make_loader, load_fold_index
+except ImportError:  # Import as a standalone module from code/module1/
+    from clean_v2_dataset import CleanV2SegDataset, make_loader, load_fold_index
+
+ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_INNER_CSV = ROOT / "data/splits/inner_clean_v2_v1/image_inner_splits_cv5_candidate.csv"
 
 
-ALLOWED_SPLITS = {
-    "SEG_TRAIN",
-    "SEG_VAL",
-    "META_FIT",
-    "CALIBRATION",
-    "OUTER_TEST",
-    "NEVER_POLYP_TEST",
-}
+class FARPolypDataset(CleanV2SegDataset):
+    """M1 dataset with the approved Inner CV5 split as the only default.
 
+    Example: FARPolypDataset(clean_dataset_root, fold=0, split="SEG_TRAIN")
+    The previous (manifest_path, patient_ids, split) API is intentionally invalid.
+    """
 
-class FARPolypDataset(Dataset):
-    def __init__(
-        self,
-        manifest_path,
-        patient_ids,
-        split,
-        augment=False,
-        image_ids=None
-    ):
-        if split not in ALLOWED_SPLITS:
-            raise ValueError(f"Invalid split: {split}")
-
-        if augment and split != "SEG_TRAIN":
+    def __init__(self, data_root, fold=0, split="SEG_TRAIN", *,
+                 csv_path=None, size=256, include_healthy=False,
+                 augment=None, return_metadata=False,
+                 allow_final_test=False):
+        if isinstance(fold, (set, list, tuple, dict)):
             raise ValueError(
-                "Augmentation is only allowed for SEG_TRAIN"
+                "Historical patient_ids API is forbidden for Clean V2. "
+                "Use FARPolypDataset(data_root, fold=0, split='SEG_TRAIN'). "
+                "Archived implementation: legacy_dataset.py."
             )
+        if str(fold) not in {"0", "1", "2", "3", "4"}:
+            raise ValueError("fold must be an integer 0..4")
+        if split in {"OUTER_TEST", "NEVER_POLYP_TEST"} and not allow_final_test:
+            raise PermissionError(
+                f"{split} is held out. allow_final_test=True is for a locked final evaluation only."
+            )
+        super().__init__(
+            data_root, csv_path if csv_path is not None else DEFAULT_INNER_CSV,
+            fold, split, size=size, include_healthy=include_healthy,
+            augment=augment, return_metadata=return_metadata,
+            strict_clean_v2=True, allow_final_test=allow_final_test,
+        )
 
-        patient_ids = {str(p) for p in patient_ids}
 
-        if not patient_ids:
-            raise ValueError("patient_ids cannot be empty")
-
-        df = pd.read_csv(manifest_path)
-
-        self.df = df[
-            df["patient_id"].astype(str).isin(patient_ids)
-        ].reset_index(drop=True)
-
-        # Nếu có danh sách ảnh chính thức, chỉ đọc đúng các ảnh đó
-        if image_ids is not None:
-            image_ids = {str(x) for x in image_ids}
-
-            if not image_ids:
-                raise ValueError("image_ids cannot be empty")
-
-            available_ids = set(self.df["image_id"].astype(str))
-            missing_ids = image_ids - available_ids
-
-            if missing_ids:
-                raise ValueError(
-                    f"Unknown image IDs: {sorted(missing_ids)[:5]}"
-                )
-
-            self.df = self.df[
-                self.df["image_id"].astype(str).isin(image_ids)
-            ].reset_index(drop=True)
-
-        if self.df.empty:
-            raise ValueError("No images found for patient_ids")
-
-        self.split = split
-        self.augment = augment
-
-    def __len__(self):
-        return len(self.df)
-
-    def __getitem__(self, index):
-        row = self.df.iloc[index]
-
-        # Tái sử dụng tiền xử lý đã kiểm tra
-        image, mask = load_sample(row)
-
-        # Augmentation đồng bộ ảnh và mask
-        if self.augment:
-            if torch.rand(()).item() < 0.5:
-                image = np.flip(image, axis=1).copy()
-                mask = np.flip(mask, axis=1).copy()
-
-        # Image: HWC -> CHW
-        image = np.transpose(image, (2, 0, 1)).copy()
-
-        # Mask: HW -> CHW
-        mask = np.expand_dims(mask, axis=0).copy()
-
-        image = torch.from_numpy(image).float()
-        mask = torch.from_numpy(mask).float()
-
-        return {
-            "image": image,
-            "mask": mask,
-            "image_id": str(row["image_id"]),
-            "patient_id": str(row["patient_id"]),
-            "split": self.split,
-        }
+__all__ = ["FARPolypDataset", "CleanV2SegDataset", "make_loader", "load_fold_index", "DEFAULT_INNER_CSV"]
