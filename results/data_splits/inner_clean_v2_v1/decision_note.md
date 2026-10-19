@@ -1,0 +1,53 @@
+# Inner Split Decision Note
+
+**Status:** PENDING_TEAM_APPROVAL
+
+Protocol A, seed 2026; preserve outer partitions. Allocate only outer TRAIN by split_group_id. Deterministic greedy objective prioritizes Polyp image counts (~70/20/10), then group counts and Healthy counts. Group indivisibility takes precedence over exact quotas.
+
+## Module policy
+- M1: train on SEG_TRAIN Polyp, select on SEG_VAL.
+- M2: mine/fine-tune on SEG_TRAIN only, select on SEG_VAL.
+- M3: build approved memory on META_FIT; exclude the query's patient and linked split_group_id in retrieval.
+- M4: fit on META_FIT using an unseen backbone; choose thresholds only on CALIBRATION.
+- OUTER_TEST and NEVER_POLYP_TEST: final evaluation only.
+
+## Checkpoint compatibility
+A prior checkpoint trained on the original full TRAIN cannot be treated as unseen for META_FIT. Keep old checkpoints; retrain M1/M2 after approval.
+
+## Fold statistics
+
+|   fold | inner_split      |   patients |   split_groups |   polyp |   healthy | polyp_fraction_of_outer_train   |
+|-------:|:-----------------|-----------:|---------------:|--------:|----------:|:--------------------------------|
+|      0 | SEG_TRAIN        |         68 |             67 |     215 |      1103 | 0.71906                         |
+|      0 | META_FIT         |         37 |             37 |      57 |       553 | 0.19064                         |
+|      0 | CALIBRATION      |         26 |             26 |      27 |       406 | 0.0903                          |
+|      0 | SEG_VAL          |         19 |             19 |      44 |       312 |                                 |
+|      0 | OUTER_TEST       |         38 |             38 |      87 |       574 |                                 |
+|      0 | NEVER_POLYP_TEST |        267 |            266 |       0 |      4695 |                                 |
+|      1 | SEG_TRAIN        |         68 |             67 |     215 |      1082 | 0.71906                         |
+|      1 | META_FIT         |         38 |             38 |      57 |       571 | 0.19064                         |
+|      1 | CALIBRATION      |         26 |             26 |      27 |       386 | 0.0903                          |
+|      1 | SEG_VAL          |         18 |             18 |      44 |       284 |                                 |
+|      1 | OUTER_TEST       |         38 |             38 |      87 |       625 |                                 |
+|      1 | NEVER_POLYP_TEST |        267 |            266 |       0 |      4695 |                                 |
+|      2 | SEG_TRAIN        |         69 |             68 |     217 |      1161 | 0.71854                         |
+|      2 | META_FIT         |         39 |             39 |      58 |       575 | 0.19205                         |
+|      2 | CALIBRATION      |         25 |             25 |      27 |       344 | 0.0894                          |
+|      2 | SEG_VAL          |         18 |             18 |      42 |       318 |                                 |
+|      2 | OUTER_TEST       |         37 |             37 |      86 |       550 |                                 |
+|      2 | NEVER_POLYP_TEST |        267 |            266 |       0 |      4695 |                                 |
+|      3 | SEG_TRAIN        |         67 |             67 |     217 |      1092 | 0.71854                         |
+|      3 | META_FIT         |         39 |             39 |      58 |       604 | 0.19205                         |
+|      3 | CALIBRATION      |         26 |             26 |      27 |       410 | 0.0894                          |
+|      3 | SEG_VAL          |         18 |             18 |      44 |       269 |                                 |
+|      3 | OUTER_TEST       |         38 |             37 |      84 |       573 |                                 |
+|      3 | NEVER_POLYP_TEST |        267 |            266 |       0 |      4695 |                                 |
+|      4 | SEG_TRAIN        |         69 |             68 |     216 |      1112 | 0.72                            |
+|      4 | META_FIT         |         38 |             38 |      57 |       575 | 0.19                            |
+|      4 | CALIBRATION      |         26 |             26 |      27 |       390 | 0.09                            |
+|      4 | SEG_VAL          |         18 |             18 |      44 |       245 |                                 |
+|      4 | OUTER_TEST       |         37 |             37 |      86 |       626 |                                 |
+|      4 | NEVER_POLYP_TEST |        267 |            266 |       0 |      4695 |                                 |
+
+## Remaining approval
+Team must approve this candidate and the module protocol before official use or training.

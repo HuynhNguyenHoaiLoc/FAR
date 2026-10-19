@@ -1,0 +1,29 @@
+{
+  "status": "PENDING_TEAM_APPROVAL",
+  "seed": 2026,
+  "protocol_version": "inner_clean_v2_v1",
+  "result": "PASS",
+  "patient_rows": 2275,
+  "image_rows": 40365,
+  "linked_group_conflicts": 0,
+  "patient_image_mismatches": 0,
+  "outer_partition_changes": 0,
+  "cross_split_exact_sha_duplicates": 0,
+  "warnings": [],
+  "checkpoint_warning": "CHECKPOINT_INCOMPATIBLE_WITH_HOLDOUT_META_FIT if trained on original full TRAIN",
+  "input_sha256": {
+    "patient_splits_clean_cv5_v2_proposal.csv": "ef803f7341e1e9a86a6e828a9940d0fb1c396c3c28f7948df6fed178579186f7",
+    "image_splits_clean_cv5_v2_proposal.csv": "219047dac13fe196a0348e01b48fef2def906d590f4d34acf6bd978456353ee9",
+    "patient_linkage.csv": "ef7c8b4527db3a070ea3d397df8287c84cc07ee1c4e0a25476af4231ed82285d",
+    "validation_summary.json": "a17ea53cadb26b282973dc507f9b971fd80269f3e147845d14c25d8062b3c070"
+  },
+  "output_sha256": {
+    "patient_inner_splits_cv5_candidate.csv": "8d9659038c4d4ceb81b83db46ec8ca3ad6d237c25ef3cd1c2efac9394b3ff378",
+    "image_inner_splits_cv5_candidate.csv": "8d7606ae2bff6f823b32f01be05c72356a188e6e8c12b0602d4c5bac3e68804d"
+  },
+  "script_sha256": {
+    "build_inner_splits.py": "6bb2a46722002e3c655c1c25b24cbf3a01a59bf679b866e8412f2f9abd562f80",
+    "validate_inner_splits.py": "5ce86ce7b074605b5394d0b2ff66f3112baaf7a894f130e703519a1b0d59fef3"
+  },
+  "reproducibility": "PASS"
+}

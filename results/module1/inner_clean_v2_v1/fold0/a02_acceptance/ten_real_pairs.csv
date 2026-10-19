@@ -1,0 +1,11 @@
+﻿fold,split,image_id,patient_id,split_group_id,image_path,mask_path,native_width,native_height,mask_foreground_px,native_size_match
+0,SEG_TRAIN,Patient1__Polyp__1402-07-299325212-5330,Patient1,Patient1,Patient1/Polyp/1402-07-299325212-5330.jpg,Patient1/BinaryMask/1402-07-299325212-5330.jpg,672,480,1251,True
+0,SEG_TRAIN,Patient127__Polyp__1401-07-191356391-3761,Patient127,Patient127,Patient127/Polyp/1401-07-191356391-3761.jpg,Patient127/BinaryMask/1401-07-191356391-3761.jpg,572,470,56360,True
+0,SEG_TRAIN,Patient163__Polyp__1401-10-1112342411-4138,Patient163,Patient163,Patient163/Polyp/1401-10-1112342411-4138.jpg,Patient163/BinaryMask/1401-10-1112342411-4138.jpg,572,470,9734,True
+0,SEG_TRAIN,Patient188__Polyp__1401-11-301121536-4349,Patient188,Patient188,Patient188/Polyp/1401-11-301121536-4349.jpg,Patient188/BinaryMask/1401-11-301121536-4349.jpg,572,470,6116,True
+0,SEG_TRAIN,Patient228__Polyp__1402-02-1711211510-4628,Patient228,Patient228,Patient228/Polyp/1402-02-1711211510-4628.jpg,Patient228/BinaryMask/1402-02-1711211510-4628.jpg,572,470,2590,True
+0,SEG_TRAIN,Patient272__Polyp__1403-02-041357255-6185,Patient272,Patient272,Patient272/Polyp/1403-02-041357255-6185.jpg,Patient272/BinaryMask/1403-02-041357255-6185.jpg,672,480,53431,True
+0,SEG_TRAIN,Patient308__Polyp__1403-05-071059283-6622,Patient308,Patient308,Patient308/Polyp/1403-05-071059283-6622.jpg,Patient308/BinaryMask/1403-05-071059283-6622.jpg,672,480,26900,True
+0,SEG_TRAIN,Patient351__Polyp__1402-03-221123468-4790,Patient351,Patient351,Patient351/Polyp/1402-03-221123468-4790.jpg,Patient351/BinaryMask/1402-03-221123468-4790.jpg,572,470,4986,True
+0,SEG_TRAIN,Patient386__Polyp__1402-05-1815535410-5050,Patient386,LINK_366_386,Patient386/Polyp/1402-05-1815535410-5050.jpg,Patient386/BinaryMask/1402-05-1815535410-5050.jpg,720,480,6967,True
+0,SEG_TRAIN,Patient9__Polyp__1402-08-0792151-5373,Patient9,Patient9,Patient9/Polyp/1402-08-0792151-5373.jpg,Patient9/BinaryMask/1402-08-0792151-5373.jpg,672,480,2057,True

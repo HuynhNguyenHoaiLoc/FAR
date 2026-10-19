@@ -1,0 +1,18 @@
+{
+  "protocol": "clean_v2_outer_cv5",
+  "approval": "Group lead confirmed Clean V2 and Inner Splits",
+  "patients_per_fold": 455,
+  "groups_per_fold": 453,
+  "images_per_fold": 8073,
+  "polyp_per_fold": 430,
+  "original_patient_assignments_changed": 5,
+  "changed_patient": "Patient366",
+  "source_inner_patient_sha256": "8d9659038c4d4ceb81b83db46ec8ca3ad6d237c25ef3cd1c2efac9394b3ff378",
+  "source_inner_image_sha256": "8d7606ae2bff6f823b32f01be05c72356a188e6e8c12b0602d4c5bac3e68804d",
+  "outputs_sha256": {
+    "patient_splits_clean_cv5_v2.csv": "339193839dd8379fe0a732f5d6cfd6a1e9fe9c278cf659b1b0b181d42b9d5de9",
+    "image_splits_clean_cv5_v2.csv": "230d4c1b5ff203698cbfcfaffd901dc978684c053bf4a5aaadcdb6507ab71509",
+    "polyp_image_splits_clean_cv5_v2.csv": "11748b671516c36ccb77b0788edf8933ac90de60a198a59d5433efa1605b2095"
+  },
+  "legacy_official_files_modified": false
+}

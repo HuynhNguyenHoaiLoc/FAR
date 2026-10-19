@@ -1,0 +1,37 @@
+{
+  "task": "A02",
+  "result": "PASS",
+  "fold": "0",
+  "input_split_csv": "/kaggle/input/datasets/eoquiither/datasetok/data/splits/inner_clean_v2_v1/image_inner_splits_cv5_candidate.csv",
+  "dataset_root": "/kaggle/input/datasets/eoquiither/far-polyp-seg-clean-v1-candidate/far_polyp_seg_clean_v1_candidate/Dataset",
+  "image_count": 8073,
+  "patient_count": 455,
+  "linked_group_count": 453,
+  "polyp_count": 430,
+  "healthy_count": 7643,
+  "group_leakage": 0,
+  "patient_leakage": 0,
+  "gt_pairs_verified": 10,
+  "gt_pairs_different_patients": 10,
+  "train_augmentation_only": true,
+  "seg_train_polyp_count": 215,
+  "seg_val_polyp_count": 44,
+  "loader_rgb_shape": [
+    2,
+    3,
+    256,
+    256
+  ],
+  "loader_gt_shape": [
+    2,
+    1,
+    256,
+    256
+  ],
+  "gt_mask_values": [
+    0,
+    1
+  ],
+  "test_splits_loaded": false,
+  "notes": "Actual cleaned RGB/GT files opened; no split creation or trained-model inference."
+}
