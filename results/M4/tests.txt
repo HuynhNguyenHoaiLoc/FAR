@@ -1,0 +1,65 @@
+======================================================================
+FAR-POLYP-SEG | MODULE 4 (M4: METRICS) - HAND-CALCULATED VERIFICATION
+======================================================================
+Connected Component Minimum Area Rule: >= 100 pixels
+
+[TEST 1] 10x10 Partial Overlap Mask (Dice, IoU, Recall, Precision, Pixel FPR)
+  Hand calculation : TP=10, FP=10, FN=10, TN=70 (Total=100 px)
+  Code counts      : TP=10, FP=10, FN=10, TN=70
+  Dice      : hand = 20/40 = 0.500000 | code = 0.500000
+  IoU       : hand = 10/30 = 0.333333 | code = 0.333333
+  Recall    : hand = 10/20 = 0.500000 | code = 0.500000
+  Precision : hand = 10/20 = 0.500000 | code = 0.500000
+  Pixel FPR : hand = 10/80 = 0.125000 | code = 0.125000
+  Status    : PASS
+
+[TEST 2] Asymmetric Overlap on 20x20 Grid (Hand-calculated exact fractions)
+  Hand calculation : TP=90, FP=60, FN=30, TN=220 (Total=400 px)
+  Code counts      : TP=90, FP=60, FN=30, TN=220
+  Dice      : hand = 180/270 = 0.666667 | code = 0.666667
+  IoU       : hand =  90/180 = 0.500000 | code = 0.500000
+  Recall    : hand =  90/120 = 0.750000 | code = 0.750000
+  Precision : hand =  90/150 = 0.600000 | code = 0.600000
+  Pixel FPR : hand =  60/280 = 0.214286 | code = 0.214286
+  Status    : PASS
+
+[TEST 3] Edge Cases (Perfect Match, Complete Miss, Empty-Empty Normal)
+  3a Perfect Match : Dice=1.000000, IoU=1.000000, Recall=1.000000, FPR=0.000000
+  3b Disjoint Miss : Dice=0.000000, IoU=0.000000, Recall=0.000000, FPR=0.050000 (4/80)
+  3c Empty Normal  : Dice=1.000000, IoU=1.000000, FPR=0.000000
+  Status           : PASS
+
+[TEST 4] Connected Component Rule >= 100 px (Boundary & Filtering Test)
+  Input blobs      : 45 px, 99 px, 100 px, 150 px (Total raw = 394 px)
+  Rejected (<100)  : [45, 99] px (2 components removed)
+  Kept (>=100)     : [100, 150] px (2 components retained)
+  Filtered pixels  : hand = 250 px | code = 250 px
+  Status           : PASS
+
+[TEST 5] CC >= 100 px Effect on Polyp Mask with Spurious Noise Blob
+  Before CC filter : TP=100, FP=60, FN=20 -> Dice=0.714286 (5/7), IoU=0.555556 (5/9)
+  After CC >=100px : TP=100, FP=0,  FN=20 -> Dice=0.909091 (10/11), IoU=0.833333 (5/6)
+  Status           : PASS
+
+[TEST 6] Image-level FPR on 5 Normal (Healthy) Images under CC >= 100 px Rule
+  Normal #1 (30px + 85px disconnected) : max CC =  85 px < 100 -> TN
+  Normal #2 (120px single component)   : max CC = 120 px >=100 -> FP
+  Normal #3 (0px clean)                : max CC =   0 px < 100 -> TN
+  Normal #4 (99px boundary component)  : max CC =  99 px < 100 -> TN
+  Normal #5 (100px boundary component) : max CC = 100 px >=100 -> FP
+  Image-level FPR (CC >= 100 px) : hand = 2/5 = 0.400000 | code = 0.400000
+  Raw FPR (no CC filter)         : hand = 4/5 = 0.800000 | code = 0.800000
+  Status                         : PASS
+
+[TEST 7] End-to-End Dataset Evaluation (Polyp + Normal Protocol Summary)
+  Mean Polyp Dice        : hand = 5/11 = 0.454545 | code = 0.454545
+  Mean Polyp IoU         : hand = 5/12 = 0.416667 | code = 0.416667
+  Mean Polyp Recall      : hand = 5/12 = 0.416667 | code = 0.416667
+  Polyp Image Recall     : hand =  1/2 = 0.500000 | code = 0.500000
+  Normal Image FPR       : hand =  2/5 = 0.400000 | code = 0.400000
+  Outcome Partitioning   : TP=['polyp_A'], FN=['polyp_B'], FP=['norm_2', 'norm_5'], TN=['norm_1', 'norm_3', 'norm_4']
+  Status                 : PASS
+
+======================================================================
+ALL 7 HAND-CALCULATED METRIC & CONNECTED-COMPONENT TESTS PASSED (100%)
+======================================================================
