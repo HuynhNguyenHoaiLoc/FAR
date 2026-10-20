@@ -50,3 +50,12 @@ with these Clean V2 Inner Fold 0 artifacts.
 - Fold 1-4 training
 - Final outer-test evaluation
 - End-to-end validation of M2-M4
+
+## A03 acceptance (additional)
+
+See `docs/A03_CLEAN_V2_FOLD0.md`. The original training metadata does not
+record CUDA AMP status or per-epoch AMP execution, so A03 cannot be marked
+fully accepted from the current GitHub artifacts alone. The reconstructed
+config under `configs/train_config.yaml` explicitly labels unknown values.
+The A03 verifier reports PENDING until it sees real evidence. Do not assign
+AMP=true to the historical run merely to pass the checker.
