@@ -54,15 +54,82 @@ def structure_loss(logits, targets):
 
 
 def heads(prediction, target_size):
+    """Unpack upstream PraNet DeepSupervisionOutput without detaching gradients.
+
+    Upstream may return a dataclass / namedtuple / dict holding one primary
+    logits tensor and auxiliary segmentation heads, rather than a tensor tuple.
+    The main prediction MUST be last: evaluate() uses heads(...)[-1] for Dice.
+    """
+    import re
+    from collections.abc import Mapping
+    from dataclasses import fields, is_dataclass
+
+    import torch
     import torch.nn.functional as F
-    pred = prediction if isinstance(prediction, (list, tuple)) else [prediction]
+
+    discovered = []
+    seen = set()
+
+    def visit(item, label="output", depth=0):
+        if depth > 8:
+            raise ValueError("PraNet output nesting too deep")
+        if isinstance(item, torch.Tensor):
+            discovered.append((label, item))
+        elif isinstance(item, Mapping):
+            for key, value in item.items():
+                visit(value, f"{label}.{key}", depth + 1)
+        elif is_dataclass(item) and not isinstance(item, type):
+            for field in fields(item):
+                visit(getattr(item, field.name), f"{label}.{field.name}", depth + 1)
+        elif isinstance(item, tuple) and hasattr(item, "_fields"):
+            for key in item._fields:
+                visit(getattr(item, key), f"{label}.{key}", depth + 1)
+        elif isinstance(item, (list, tuple)):
+            for i, value in enumerate(item):
+                visit(value, f"{label}[{i}]", depth + 1)
+        elif hasattr(item, "__dict__"):
+            if id(item) in seen:
+                raise ValueError("Cyclic PraNet model output")
+            seen.add(id(item))
+            for key, value in vars(item).items():
+                if not key.startswith("_"):
+                    visit(value, f"{label}.{key}", depth + 1)
+            seen.remove(id(item))
+        # Ignore scalar metadata, if any.
+
+    visit(prediction)
+    if not discovered:
+        raise TypeError(f"No tensor found in PraNet output {type(prediction).__name__}")
+    for label, tensor in discovered:
+        if tensor.ndim != 4 or tensor.shape[1] != 1:
+            raise ValueError(f"Unexpected PraNet head {label}: {tuple(tensor.shape)}")
+
+    primary_keys = {"main", "main_logits", "logits", "final", "final_logits",
+                    "prediction", "pred", "out", "output", "primary"}
+    def is_primary(label):
+        parts = [x for x in re.split(r"[.\[\]]+", label.lower()) if x]
+        # The generic root name 'output' is not proof that a head is primary.
+        return any(part in primary_keys for part in parts[1:])
+
+    primary = [(label, tensor) for label, tensor in discovered if is_primary(label)]
+    auxiliary = [(label, tensor) for label, tensor in discovered if not is_primary(label)]
+    if len(discovered) > 1 and len(primary) != 1:
+        if isinstance(prediction, (tuple, list)):
+            # Historical tuple convention: final segmentation output last.
+            ordered = discovered
+        else:
+            raise ValueError(
+                "Ambiguous main PraNet head. Discovered paths: "
+                + ", ".join(label for label, _ in discovered)
+            )
+    else:
+        ordered = auxiliary + primary if primary else discovered
     result = []
-    for head in pred:
-        if head.ndim != 4 or head.size(1) != 1:
-            raise ValueError(f"Unexpected PraNet head shape: {tuple(head.shape)}")
-        if head.shape[-2:] != target_size:
-            head = F.interpolate(head, size=target_size, mode="bilinear", align_corners=False)
-        result.append(head)
+    for _label, tensor in ordered:
+        if tensor.shape[-2:] != tuple(target_size):
+            tensor = F.interpolate(tensor, size=target_size, mode="bilinear",
+                                   align_corners=False)
+        result.append(tensor)
     return result
 
 
